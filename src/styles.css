@@ -838,33 +838,38 @@ select:focus-visible {
 .compact { max-width: 1360px; }
 
 /* ================================================================== */
-/*  Cutter layout  —  sidebar + canvas, results below                  */
+/*  Cutter layout                                                      */
+/*  Editor (sidebar + canvas) is one fixed-height row. The crops      */
+/*  section is a plain block BELOW it — the page scrolls, nothing      */
+/*  overlaps, and the sidebar is NOT sticky.                           */
 /* ================================================================== */
 
 .cutter-layout {
-  display: grid;
-  grid-template-columns: 340px minmax(0, 1fr);
-  grid-template-rows: auto auto;
-  grid-template-areas:
-    "panel workspace"
-    "results results";
+  display: flex;
+  flex-direction: column;
   gap: 16px;
-  align-items: start;
   padding: 16px;
   max-width: 1500px;
   margin: 0 auto;
 }
 
-.cutter-panel  { grid-area: panel; }
-.workspace     { grid-area: workspace; }
-.crop-results  { grid-area: results; }
+/* ---- Editor row ---- */
 
-/* ---- Sidebar ---- */
+.cutter-editor {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
+  height: calc(100vh - 116px);
+  min-height: 460px;
+  max-height: 860px;
+}
+
+/* ---- Sidebar (scrolls internally, not sticky) ---- */
 
 .cutter-panel {
-  position: sticky;
-  top: 84px;
-  max-height: calc(100vh - 100px);
+  min-width: 0;
+  min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 18px;
@@ -874,7 +879,6 @@ select:focus-visible {
   box-shadow: var(--shadow);
   scrollbar-width: thin;
   scrollbar-color: #d6c8b2 transparent;
-  min-width: 0;
 }
 
 .cutter-panel::-webkit-scrollbar { width: 8px; }
@@ -1138,11 +1142,9 @@ select:focus-visible {
 
 .notice svg { flex: 0 0 auto; }
 
-/* ---- Slider controls for auto-detect ---- */
+/* ---- Auto-detect sliders ---- */
 
-.slider-field {
-  margin-top: 12px;
-}
+.slider-field { margin-top: 12px; }
 
 .slider-head {
   display: flex;
@@ -1247,22 +1249,18 @@ select:focus-visible {
   background: #8b9873;
 }
 
-/* ================================================================== */
-/*  Workspace                                                          */
-/* ================================================================== */
+/* ---- Workspace ---- */
 
 .workspace {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 116px);
-  max-height: 820px;
-  min-height: 420px;
+  min-width: 0;
+  min-height: 0;
   background: #e7e4d6;
   border: 1px solid var(--line);
   border-radius: 17px;
   overflow: hidden;
   box-shadow: var(--shadow);
-  min-width: 0;
 }
 
 .workspace-top {
@@ -1383,9 +1381,7 @@ select:focus-visible {
   flex: 0 0 auto;
 }
 
-/* ================================================================== */
-/*  Crop results  (full-width row beneath the editor)                  */
-/* ================================================================== */
+/* ---- Crop results (plain block below the editor) ---- */
 
 .crop-results {
   padding: 22px;
@@ -1854,26 +1850,26 @@ select:focus-visible {
 @media (max-width: 1000px) {
   .hero-inner { gap: 28px; }
   .hero h1 { letter-spacing: -3px; }
-  .cutter-layout { grid-template-columns: 300px minmax(0, 1fr); }
+  .cutter-editor { grid-template-columns: 300px minmax(0, 1fr); }
   .crop-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
   .note2 { left: -10px; }
   .workflow-inner { gap: 56px; }
 }
 
 @media (max-width: 960px) {
-  .cutter-layout {
+  .cutter-layout { padding: 12px; }
+
+  .cutter-editor {
     grid-template-columns: 1fr;
-    grid-template-areas:
-      "panel"
-      "workspace"
-      "results";
-    padding: 12px;
+    grid-template-rows: auto auto;
+    height: auto;
+    max-height: none;
+    min-height: 0;
   }
 
   .cutter-panel {
-    position: static;
-    max-height: none;
     overflow: visible;
+    max-height: none;
   }
 
   .workspace {
@@ -2061,6 +2057,7 @@ select:focus-visible {
   .tool-title h1 { font-size: 25px; }
 
   .cutter-layout { padding: 8px; gap: 10px; }
+  .cutter-editor { gap: 10px; }
   .cutter-panel { padding: 13px; border-radius: 13px; }
   .workspace { height: 55vh; min-height: 320px; border-radius: 13px; }
   .workspace-top { padding: 10px; }

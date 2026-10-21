@@ -99,18 +99,14 @@ const RIBBON_WORDS = ['Made for everyday workflows', 'One place. Five useful too
 /*  Motion presets                                                     */
 /* ------------------------------------------------------------------ */
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 22 },
-  visible: (delay = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.65, delay, ease: EASE },
-  }),
-};
-
 const childFade = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 22 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: EASE } },
 };
 
 /* ------------------------------------------------------------------ */
@@ -248,7 +244,6 @@ export default function LandingPage({ onLaunchApp, onOpenTool }) {
   const prefersReducedMotion = useReducedMotion();
   const heroRef = useRef(null);
 
-  /* Subtle parallax as the visitor scrolls past the hero */
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
   const parallaxY = useSpring(useTransform(scrollYProgress, [0, 1], [0, 60]), {
     stiffness: 120,
@@ -256,7 +251,6 @@ export default function LandingPage({ onLaunchApp, onOpenTool }) {
   });
   const parallaxOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0.5]);
 
-  /* Escape closes the mobile menu */
   useEffect(() => {
     if (!isMenuOpen) return undefined;
     const handleKeyDown = (event) => {
@@ -271,6 +265,11 @@ export default function LandingPage({ onLaunchApp, onOpenTool }) {
   const scrollToServices = () => {
     document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
     closeMenu();
+  };
+
+  /* Open a tool — used by the whole card, not just a nested button. */
+  const openTool = (id) => {
+    if (typeof onOpenTool === 'function') onOpenTool(id);
   };
 
   return (
@@ -322,7 +321,7 @@ export default function LandingPage({ onLaunchApp, onOpenTool }) {
             <motion.button
               type="button"
               className="btn btn-primary"
-              onClick={onLaunchApp}
+              onClick={() => onLaunchApp?.()}
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
             >
@@ -386,7 +385,7 @@ export default function LandingPage({ onLaunchApp, onOpenTool }) {
               <motion.button
                 type="button"
                 className="btn btn-primary btn-big"
-                onClick={onLaunchApp}
+                onClick={() => onLaunchApp?.()}
                 whileHover={{ y: -3, scale: 1.01 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ type: 'spring', stiffness: 360, damping: 22 }}
@@ -481,13 +480,17 @@ export default function LandingPage({ onLaunchApp, onOpenTool }) {
           viewport={{ once: true, amount: 0.15 }}
         >
           {SERVICES.map(({ id, icon: Icon, title, description, tag }, index) => (
-            <motion.article
+            <motion.button
+              type="button"
               key={id}
               className={`service-card${index === 0 ? ' featured' : ''}`}
               variants={childFade}
+              onClick={() => openTool(id)}
               whileHover={
                 prefersReducedMotion ? {} : { y: -6, transition: { duration: 0.25, ease: EASE } }
               }
+              whileTap={{ scale: 0.98 }}
+              aria-label={`Open ${title}`}
             >
               <div className="service-top">
                 <motion.span
@@ -497,17 +500,7 @@ export default function LandingPage({ onLaunchApp, onOpenTool }) {
                 >
                   <Icon size={22} strokeWidth={1.75} />
                 </motion.span>
-                {tag && (
-                  <motion.span
-                    className="tag"
-                    initial={{ opacity: 0, x: -6 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: 0.2 }}
-                  >
-                    {tag}
-                  </motion.span>
-                )}
+                {tag && <span className="tag">{tag}</span>}
                 <motion.span
                   className="service-arrow"
                   whileHover={{ x: 3, y: -3 }}
@@ -520,11 +513,7 @@ export default function LandingPage({ onLaunchApp, onOpenTool }) {
               <h3>{title}</h3>
               <p>{description}</p>
               <span className="service-open">Open tool</span>
-
-              <button type="button" className="service-hit" onClick={() => onOpenTool(id)}>
-                <span className="sr-only">Open {title}</span>
-              </button>
-            </motion.article>
+            </motion.button>
           ))}
         </motion.div>
       </section>
@@ -552,7 +541,7 @@ export default function LandingPage({ onLaunchApp, onOpenTool }) {
             <motion.button
               type="button"
               className="btn btn-primary"
-              onClick={onLaunchApp}
+              onClick={() => onLaunchApp?.()}
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
             >
