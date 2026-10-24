@@ -35,9 +35,11 @@ const NAV_LINKS = [
   { href: '#privacy', label: 'Privacy' },
 ];
 
+/* Each service carries its tool id and the URL path that opens it. */
 const SERVICES = [
   {
     id: 'cutter',
+    path: '/image-cutter',
     icon: Scissors,
     title: 'Image cutter & grid splitter',
     description: 'Select exact regions or split an image into a clean grid.',
@@ -45,24 +47,28 @@ const SERVICES = [
   },
   {
     id: 'resizer',
+    path: '/image-resizer',
     icon: Maximize2,
     title: 'Image resizer',
     description: 'Set exact dimensions or resize by percentage.',
   },
   {
     id: 'compressor',
+    path: '/image-compressor',
     icon: Gauge,
     title: 'Compress image',
     description: 'Reduce file size and compare results before downloading.',
   },
   {
     id: 'converter',
+    path: '/image-converter',
     icon: Repeat2,
     title: 'Convert format',
     description: 'Convert images to PNG, JPEG, or WebP.',
   },
   {
     id: 'pdf',
+    path: '/images-to-pdf',
     icon: FileText,
     title: 'Images to PDF',
     description: 'Arrange multiple images and combine them into one PDF.',
@@ -267,9 +273,17 @@ export default function LandingPage({ onLaunchApp, onOpenTool }) {
     closeMenu();
   };
 
-  /* Open a tool — used by the whole card, not just a nested button. */
-  const openTool = (id) => {
+  /* Real navigation: preventDefault, let the router push the history entry. */
+  const handleToolClick = (event, id) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.button === 1) return;
+    event.preventDefault();
     if (typeof onOpenTool === 'function') onOpenTool(id);
+  };
+
+  const handleLaunch = (event) => {
+    if (event && (event.metaKey || event.ctrlKey || event.shiftKey || event.button === 1)) return;
+    event?.preventDefault();
+    if (typeof onLaunchApp === 'function') onLaunchApp();
   };
 
   return (
@@ -318,15 +332,15 @@ export default function LandingPage({ onLaunchApp, onOpenTool }) {
               </motion.a>
             ))}
 
-            <motion.button
-              type="button"
+            <motion.a
+              href="/image-cutter"
               className="btn btn-primary"
-              onClick={() => onLaunchApp?.()}
+              onClick={handleLaunch}
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
             >
               Open workspace <ArrowUpRight size={16} />
-            </motion.button>
+            </motion.a>
           </nav>
         </div>
       </motion.header>
@@ -382,16 +396,16 @@ export default function LandingPage({ onLaunchApp, onOpenTool }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, delay: 0.45, ease: EASE }}
             >
-              <motion.button
-                type="button"
+              <motion.a
+                href="/image-cutter"
                 className="btn btn-primary btn-big"
-                onClick={() => onLaunchApp?.()}
+                onClick={handleLaunch}
                 whileHover={{ y: -3, scale: 1.01 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ type: 'spring', stiffness: 360, damping: 22 }}
               >
                 Start with image cutter <ArrowUpRight size={18} />
-              </motion.button>
+              </motion.a>
               <motion.button
                 type="button"
                 className="btn btn-outline btn-big"
@@ -479,13 +493,13 @@ export default function LandingPage({ onLaunchApp, onOpenTool }) {
           whileInView="visible"
           viewport={{ once: true, amount: 0.15 }}
         >
-          {SERVICES.map(({ id, icon: Icon, title, description, tag }, index) => (
-            <motion.button
-              type="button"
+          {SERVICES.map(({ id, path, icon: Icon, title, description, tag }, index) => (
+            <motion.a
               key={id}
+              href={path}
               className={`service-card${index === 0 ? ' featured' : ''}`}
               variants={childFade}
-              onClick={() => openTool(id)}
+              onClick={(event) => handleToolClick(event, id)}
               whileHover={
                 prefersReducedMotion ? {} : { y: -6, transition: { duration: 0.25, ease: EASE } }
               }
@@ -513,7 +527,7 @@ export default function LandingPage({ onLaunchApp, onOpenTool }) {
               <h3>{title}</h3>
               <p>{description}</p>
               <span className="service-open">Open tool</span>
-            </motion.button>
+            </motion.a>
           ))}
         </motion.div>
       </section>
@@ -538,15 +552,15 @@ export default function LandingPage({ onLaunchApp, onOpenTool }) {
               CutMage keeps common image tasks in one tidy workspace — whether you are preparing
               product photos, organising assets, or getting images ready for a document.
             </p>
-            <motion.button
-              type="button"
+            <motion.a
+              href="/image-cutter"
               className="btn btn-primary"
-              onClick={() => onLaunchApp?.()}
+              onClick={handleLaunch}
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
             >
               Try image cutter <ArrowUpRight size={16} />
-            </motion.button>
+            </motion.a>
           </motion.div>
 
           <ol className="steps">

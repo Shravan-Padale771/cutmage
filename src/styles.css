@@ -557,6 +557,20 @@ select:focus-visible {
   transition: transform .18s, box-shadow .18s, border-color .18s;
 }
 
+.service-card {
+  font: inherit;
+  color: var(--deep);
+  cursor: pointer;
+  text-decoration: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.service-card:focus-visible {
+  outline: 3px solid #9d663866;
+  outline-offset: 3px;
+}
+
 .service-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 16px 35px #4e220f14;
